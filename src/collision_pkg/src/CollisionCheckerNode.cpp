@@ -79,7 +79,7 @@ private:
         planning_scene->getCurrentStateNonConst().update();
         
         // RCLCPP_INFO(this->get_logger(), "Current state updated.");
-        moveit::core::RobotState& current_state = planning_scene->getCurrentStateNonConst();
+        // moveit::core::RobotState& current_state = planning_scene->getCurrentStateNonConst();
         // RCLCPP_INFO(this->get_logger(), "Have current state.");
         
         // Check for collisions
@@ -108,7 +108,7 @@ private:
         for (const auto& contact_pair : collision_result.contacts)
         {
             const std::pair<std::string, std::string>& object_pair = contact_pair.first;
-            const std::vector<collision_detection::Contact>& contacts = contact_pair.second;
+            // const std::vector<collision_detection::Contact>& contacts = contact_pair.second;
 
             // Log the object names involved in the contact
             RCLCPP_INFO(logger, "Contact between: %s and %s", object_pair.first.c_str(), object_pair.second.c_str());

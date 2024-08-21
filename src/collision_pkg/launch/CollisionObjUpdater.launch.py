@@ -7,17 +7,7 @@ import yaml
 from launch.substitutions import Command, FindExecutable, LaunchConfiguration, PathJoinSubstitution
 from launch.actions import DeclareLaunchArgument
 
-# pos_x:=0.28 pos_y:=-0.2 pos_z:=0.5 ori_x:=0.0 ori_y:=0.0 ori_z:=0.0 ori_w:=1.0
-def load_yaml(package_name, file_path):
-    package_path = get_package_share_directory(package_name)
-    absolute_file_path = os.path.join(package_path, file_path)
 
-    try:
-        with open(absolute_file_path, 'r') as file:
-            return yaml.safe_load(file)
-    except EnvironmentError:  # parent of IOError, OSError *and* WindowsError where available
-        return None
-    
 # ros2 launch hello_moveit hello_moveit.launch.py position_x
 def generate_launch_description():
     # planning_context
@@ -38,8 +28,9 @@ def generate_launch_description():
         executable="OptiTrackPubNode.py",
         output="screen",
         )
+    
     collision_obj_updater_node = Node(
-        name="collision_checker_node",
+        name="collision_updater_node",
         package="collision_pkg",
         executable="CollisionObjUpdater",
         output="screen",
@@ -47,20 +38,8 @@ def generate_launch_description():
                 moveit_config.to_dict()                       
                     ]
     )
-    collision_checker_node = Node(
-        name="collision_checker_node",
-        package="collision_pkg",
-        executable="CollisionCheckerNode",
-        output="screen",
-        parameters=[
-                moveit_config.to_dict()                       
-                    ]
-    )
+
     return LaunchDescription([
         pub_natnet_node,
         collision_obj_updater_node,
-        collision_checker_node,
-
-
-
     ])
