@@ -35,31 +35,6 @@ class OptiTrackPubNode(Node):
         QsholderToElbow,shoulder_position = self.calculate_quaternion(sample['shoulder'][0], sample['elbow'][0])
         QelbowToWrist, elbow_position = self.calculate_quaternion(sample['elbow'][0], sample['wrist'][0])
 
-        # arm_positions_msg.shoulder.x = sample['shoulder'][0][0]
-        # arm_positions_msg.shoulder.y = sample['shoulder'][0][1]
-        # arm_positions_msg.shoulder.z = sample['shoulder'][0][2]
-
-        # arm_positions_msg.elbow.x = sample['elbow'][0][0]
-        # arm_positions_msg.elbow.y = sample['elbow'][0][1]
-        # arm_positions_msg.elbow.z = sample['elbow'][0][2]
-
-        # arm_positions_msg.wrist.x = sample['wrist'][0][0]
-        # arm_positions_msg.wrist.y = sample['wrist'][0][1]
-        # arm_positions_msg.wrist.z = sample['wrist'][0][2]
-
-        # # Create a Pose message
-        # pose_msg = Pose()
-
-        # # Set position
-        # pose_msg.position.x = sample['elbow'][0][0]
-        # pose_msg.position.y = sample['elbow'][0][1]
-        # pose_msg.position.z = sample['elbow'][0][2]
-        # pose_msg.orientation.w = QsholderToElbow[0]
-        # pose_msg.orientation.x = QsholderToElbow[1]
-        # pose_msg.orientation.y = QsholderToElbow[2]
-        # pose_msg.orientation.z = QsholderToElbow[3]
-        # shoulder_position = self.translate_in_local_frame(sample['shoulder'][0], QsholderToElbow, [0, 0, -0.2])
-        # elbow_position = self.translate_in_local_frame(sample['elbow'][0], QelbowToWrist, [0, 0, -0.2])
         arm_positions_msg.upper_arm.position.x = sample['shoulder'][0][0] + shoulder_position[0]
         arm_positions_msg.upper_arm.position.y = sample['shoulder'][0][1] +shoulder_position[1]
         arm_positions_msg.upper_arm.position.z = sample['shoulder'][0][2] +shoulder_position[2]
