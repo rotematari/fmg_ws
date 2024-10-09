@@ -24,8 +24,8 @@ def generate_launch_description():
     )
     pub_natnet_node = Node(
         name="pub_natnet_node",
-        package="collision_pkg",
-        executable="OptiTrackPubNode.py",
+        package="natnet_pub_pkg",
+        executable="optitrack_pub_node",
         output="screen",
         )
     

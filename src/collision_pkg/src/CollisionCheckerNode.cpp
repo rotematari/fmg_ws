@@ -1,5 +1,7 @@
 #include <rclcpp/rclcpp.hpp>
 #include <memory> // Include the header for std::shared_ptr
+#include <thread>
+#include <chrono>
 
 #include <moveit/planning_scene/planning_scene.h>
 #include <moveit/planning_scene_interface/planning_scene_interface.h>
@@ -83,25 +85,38 @@ private:
         // RCLCPP_INFO(this->get_logger(), "Have current state.");
         
         // Check for collisions
-        collision_detection::CollisionRequest collision_request;
-        collision_request.contacts = true;
-        collision_detection::CollisionResult collision_result;
-        // collision_result.clear();
-        // planning_scene->checkCollision(collision_request, collision_result, current_state);
-        planning_scene->checkCollision(collision_request, collision_result);
-
-        RCLCPP_INFO(this->get_logger(), "state is %s", planning_scene->isStateColliding()? "in collision" : "not in collision");
-        if (collision_result.collision)
-        {
-            RCLCPP_WARN(this->get_logger(), "Collision detected! Stopping the robot.");
-            RCLCPP_INFO(this->get_logger(), "%zu collision points found", collision_result.contact_count);
+        // collision_detection::CollisionRequest collision_request;
+        // collision_request.contacts = true;
+        // collision_detection::CollisionResult collision_result;
+        // // collision_result.clear();
+        // // planning_scene->checkCollision(collision_request, collision_result, current_state);
+        // planning_scene->checkCollision(collision_request, collision_result);
+        
+         // Create a RobotState object
+        const moveit::core::RobotState& current_state = planning_scene->getCurrentState();
+        // Check for the distance to collision
+        double distance = planning_scene->distanceToCollision(current_state);
+        double min_distance_threshold = 0.05;
+        if (distance <= min_distance_threshold && distance >= 0) {
+            RCLCPP_WARN(this->get_logger(), "Collision detected or too close! Distance to collision: %.3f", distance);
             move_group_->stop();
-            // printCollisionContacts(this->get_logger(), collision_result);
-        }
-        else
-        {
-            RCLCPP_INFO(this->get_logger(), "No collision detected.");
-        }
+            std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+
+        } else {
+            RCLCPP_INFO(this->get_logger(), "Safe distance maintained. Distance to collision: %.3f", distance);
+    }
+        // RCLCPP_INFO(this->get_logger(), "state is %s", planning_scene->isStateColliding()? "in collision" : "not in collision");
+        // if (collision_result.collision)
+        // {
+        //     RCLCPP_WARN(this->get_logger(), "Collision detected! Stopping the robot.");
+        //     RCLCPP_INFO(this->get_logger(), "%zu collision points found", collision_result.contact_count);
+        //     move_group_->stop();
+        //     printCollisionContacts(this->get_logger(), collision_result);
+        // }
+        // else
+        // {
+        //     RCLCPP_INFO(this->get_logger(), "No collision detected.");
+        // }
     }
     void printCollisionContacts(const rclcpp::Logger& logger, const collision_detection::CollisionResult& collision_result)
     {

@@ -22,14 +22,22 @@ def generate_launch_description():
         )
         .to_moveit_configs()
     )
+    config = os.path.join(
+        get_package_share_directory('real_time_fmg_prediction_pkg'),
+        'config',
+        'RealTimeConfig.yaml'
+    )
     pub_fmg_node = Node(
         name="pub_fmg_node",
-        package="RealTimeFmgPrediction_pkg",
+        package="real_time_fmg_prediction_pkg",
         executable="RealTimeFmgPredictionNode",
         output="screen",
+        # parameters=[
+        #         config
+        #         ]
         )
     collision_obj_updater_node = Node(
-        name="collision_checker_node",
+        name="collision_updater_node",
         package="collision_pkg",
         executable="CollisionObjUpdater",
         output="screen",
@@ -46,9 +54,19 @@ def generate_launch_description():
                 moveit_config.to_dict()                       
                     ]
     )
+    marker_pub_node = Node(
+        name="marker_pub_node",
+        package="collision_pkg",
+        executable="MarkerLinePub",
+        output="screen",
+        parameters=[
+                moveit_config.to_dict()                       
+                    ]
+    )
     return LaunchDescription([
         pub_fmg_node,
         collision_obj_updater_node,
+        marker_pub_node,
         collision_checker_node,
 
 

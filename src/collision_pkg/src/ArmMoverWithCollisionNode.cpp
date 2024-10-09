@@ -26,8 +26,7 @@ ArmMoverWithCollision()
 void initialize()
 {
     
-    // const rclcpp::NodeOptions& options = this->get_node_options();
-    // options.automatically_declare_parameters_from_overrides(true);
+
     // Initialize the PlanningSceneMonitor
     planning_scene_monitor_ = std::make_shared<planning_scene_monitor::PlanningSceneMonitor>(shared_from_this(), "robot_description");
     if (planning_scene_monitor_->getPlanningScene())
@@ -73,8 +72,8 @@ void initialize()
     RCLCPP_INFO(this->get_logger(), "Right pose goal set.");
     set_left_pose_goal();
     RCLCPP_INFO(this->get_logger(), "Left pose goal set.");
-    set_collision_object();
-    RCLCPP_INFO(this->get_logger(), "Collision object set.");
+    // set_collision_object();
+    // RCLCPP_INFO(this->get_logger(), "Collision object set.");
     set_move_group();
     RCLCPP_INFO(this->get_logger(), "Move group set.");
 
@@ -87,29 +86,27 @@ void initialize()
 private:
 void set_right_pose_goal()
 {
-    planning_interface::MotionPlanRequest req;
-    planning_interface::MotionPlanResponse res;
 
-    
-    target_pose_right.position.x = 0.5;
-    target_pose_right.position.y = -0.4;
-    target_pose_right.position.z = 0.4;
-    target_pose_right.orientation.x = 1;
-    target_pose_right.orientation.y = 0;
-    target_pose_right.orientation.z = 0;
-    target_pose_right.orientation.w = 0;
+    target_pose_right.position.x = 0.3;
+    target_pose_right.position.y = 0.14;
+    target_pose_right.position.z = 0.3;
+    target_pose_right.orientation.x = 0.707;
+    target_pose_right.orientation.y = 0.707;
+    target_pose_right.orientation.z = 0.0;
+    target_pose_right.orientation.w = 0.0;
 }
 void set_left_pose_goal()
 {
     
-    target_pose_left.position.x = 0.5;
-    target_pose_left.position.y = 0.4;
-    target_pose_left.position.z = 0.4;
-    target_pose_left.orientation.x = 1;
-    target_pose_left.orientation.y = 0;
-    target_pose_left.orientation.z = 0;
-    target_pose_left.orientation.w = 0;
+    target_pose_left.position.x = 0.0;
+    target_pose_left.position.y = -0.74;
+    target_pose_left.position.z = 0.3;
+    target_pose_left.orientation.x = 0.707;
+    target_pose_left.orientation.y = 0.707;
+    target_pose_left.orientation.z = 0.0;
+    target_pose_left.orientation.w = 0.0;
 }
+
 void set_collision_object()
 {
         // Table collision object
@@ -128,8 +125,8 @@ void set_collision_object()
         // Define the size of the box in meters
         primitive.type = primitive.BOX;
         primitive.dimensions.resize(3);
-        primitive.dimensions[primitive.BOX_X] = 1.0;
-        primitive.dimensions[primitive.BOX_Y] = 1.2;
+        primitive.dimensions[primitive.BOX_X] = 1.2;
+        primitive.dimensions[primitive.BOX_Y] = 1.0;
         primitive.dimensions[primitive.BOX_Z] = 0.1;
 
         // Define the pose of the box (relative to the frame_id)
@@ -201,7 +198,7 @@ void get_planning_plugin_names()
 
 }
 void set_move_group(){
-
+    move_group_->setPoseReferenceFrame("world");
     RCLCPP_INFO(this->get_logger(), "Move group interface initialized.");
     move_group_->setPlannerId("BiTRRTkConfigDefault");
     RCLCPP_INFO(this->get_logger(), "Planner ID set.");
@@ -213,24 +210,11 @@ void set_move_group(){
     RCLCPP_INFO(this->get_logger(), "Workspace set.");
 
 }
-// void def_workspace_bounds()
-// {
-//     // Define the workspace bounds
-//     // Define the workspace bounds
-//     workspace = std::make_shared<moveit_msgs::msg::WorkspaceParameters>();
-//     workspace.header.frame_id = "panda_link0";
-//     workspace.min_corner.x = -0.350;
-//     workspace.min_corner.y = -0.50;
-//     workspace.min_corner.z = -0.0;
-//     workspace.max_corner.x = 1.0;
-//     workspace.max_corner.y = 0.50;
-//     workspace.max_corner.z = 1.50;
-
-// }
 bool plan_and_execute_to_pose(const geometry_msgs::msg::Pose& pose)
 {
     move_group_->setStartStateToCurrentState();
 
+    
     // Set the target pose
     move_group_->setPoseTarget(pose);
 
@@ -253,23 +237,25 @@ void move_from_right_to_left()
 {
     if (moveRight)
     {
+        moveRight = false;
         // Plan and execute to the right target pose
         if (!plan_and_execute_to_pose(target_pose_right))
         {
             RCLCPP_ERROR(this->get_logger(), "Failed to plan to right target pose");
             return;
         }
-        moveRight = false;
+        
     }
     else
     {
+         moveRight = true;
         // Plan and execute to the left target pose
         if (!plan_and_execute_to_pose(target_pose_left))
         {
             RCLCPP_ERROR(this->get_logger(), "Failed to plan to left target pose");
             return;
         }
-        moveRight = true;
+       
     }
 }
 

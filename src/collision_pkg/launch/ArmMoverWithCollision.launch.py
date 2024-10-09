@@ -20,6 +20,16 @@ def generate_launch_description():
         .to_moveit_configs()
     )
     # print(moveit_config.to_dict())
+
+    hollow_box_pub =Node(
+        name="hollow_box_pub",
+        package="collision_pkg",
+        executable="HollowBoxPub",
+        output="screen",
+        parameters=[
+                moveit_config.to_dict()                       
+                    ]
+    )
     arm_mover_with_collision_node = Node(
         name="collision_checker_node",
         package="collision_pkg",
@@ -30,5 +40,6 @@ def generate_launch_description():
                     ]
     )
     return LaunchDescription([
+        hollow_box_pub,
         arm_mover_with_collision_node
     ])

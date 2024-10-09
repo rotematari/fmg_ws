@@ -10,9 +10,9 @@ include_directories(include)
 # find dependencies
 find_package(ament_cmake REQUIRED)
 # in order to use rclpy
-find_package(ament_cmake_python REQUIRED)
+# find_package(ament_cmake_python REQUIRED)
 find_package(rclcpp REQUIRED)
-find_package(rclpy REQUIRED)
+# find_package(rclpy REQUIRED)
 find_package(moveit_core REQUIRED)
 find_package(moveit_ros_planning REQUIRED)
 find_package(moveit_ros_planning_interface REQUIRED)
@@ -26,6 +26,7 @@ find_package(geometric_shapes REQUIRED)
 find_package(pluginlib REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
+
 find_package(custom_msg REQUIRED)
 
 # Include directories
@@ -86,6 +87,30 @@ ament_target_dependencies(
     tf2_ros
     geometric_shapes
     )
+  # Add the executable for the HollowBoxPub node
+  add_executable(HollowBoxPub src/HollowBoxPub.cpp)
+
+  # Link against the necessary libraries
+  ament_target_dependencies(HollowBoxPub
+    rclcpp
+    moveit_core
+    moveit_ros_planning_interface
+    moveit_ros_planning
+    moveit_visual_tools
+    pluginlib
+  )
+
+  # Add executable
+add_executable(MarkerLinePub src/MarkerLinePub.cpp)
+
+# Link libraries
+ament_target_dependencies(MarkerLinePub rclcpp geometry_msgs visualization_msgs custom_msg)
+
+# Install targets
+install(TARGETS
+MarkerLinePub
+  DESTINATION lib/${PROJECT_NAME}
+)
 # Install C++ executables
 install(TARGETS
 CollisionCheckerNode
@@ -99,33 +124,34 @@ install(TARGETS
 ArmMoverWithCollisionNode
   DESTINATION lib/${PROJECT_NAME}
 )
+install(TARGETS 
+HollowBoxPub
+  DESTINATION lib/${PROJECT_NAME}
+)
 
 # Python executable
 # Install launch files.
 install(DIRECTORY launch/
   DESTINATION share/${PROJECT_NAME}/launch
 )
-# Install natnet 
-install(DIRECTORY natnet/
-  DESTINATION share/${PROJECT_NAME}/natnet
-)
-
-# Python executable
-# Install Python modules
-ament_python_install_package(${PROJECT_NAME})
-# ament_python_install_package(natnet)
 
 
-# Install Python modules
-install(DIRECTORY natnet/
-  DESTINATION lib/${PROJECT_NAME}
-)
+# # Python executable
+# # Install Python modules
+# ament_python_install_package(${PROJECT_NAME})
+# # ament_python_install_package(natnet)
 
-# Install Python scripts
-install(PROGRAMS
-collision_pkg/OptiTrackPubNode.py
-  DESTINATION lib/${PROJECT_NAME}
-)
+
+# # Install Python modules
+# install(DIRECTORY natnet/
+#   DESTINATION lib/${PROJECT_NAME}
+# )
+
+# # Install Python scripts
+# install(PROGRAMS
+# collision_pkg/OptiTrackPubNode.py
+#   DESTINATION lib/${PROJECT_NAME}
+# )
 
 
 
